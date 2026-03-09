@@ -5,5 +5,5 @@ README.md
 logs/*
 config/gcp/*
 .claude
-
+*pycache*
 !.gitkeep
