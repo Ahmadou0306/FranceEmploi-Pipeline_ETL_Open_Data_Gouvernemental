@@ -4,6 +4,13 @@ project.md
 README.md
 logs/*
 config/gcp/*
+config/airflow.cfg
+
+
+
+
+
+
 .claude
 *pycache*
 !.gitkeep
