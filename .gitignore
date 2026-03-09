@@ -1,5 +1,9 @@
-project.md
-README.md
 venv
 .env
+project.md
+README.md
+logs/*
+configs/gcp/*
 .claude
+
+!.gitkeep
