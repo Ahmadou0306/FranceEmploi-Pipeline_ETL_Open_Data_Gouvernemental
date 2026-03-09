@@ -3,7 +3,7 @@ venv
 project.md
 README.md
 logs/*
-configs/gcp/*
+config/gcp/*
 .claude
 
 !.gitkeep
