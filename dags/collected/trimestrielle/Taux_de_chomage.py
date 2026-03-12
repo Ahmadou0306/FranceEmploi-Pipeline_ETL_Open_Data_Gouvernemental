@@ -3,10 +3,8 @@ from airflow.providers.standard.operators.empty import EmptyOperator
 from airflow.providers.standard.operators.python import PythonOperator
 from datetime import timedelta, datetime
 from google.cloud import storage
-from airflow import DAG, Asset
+from airflow import DAG
 import requests
-import csv
-import time
 from io import StringIO
 from google.cloud import bigquery
 
@@ -14,14 +12,16 @@ from google.cloud import bigquery
 import logging
 logger = logging.getLogger(__name__)
 
-from config.api_config import ASSET_PATH, PROJECT_NAME, GCS_BUCKET_NAME, API_CONFIG, GCP_PROJECT_ID,CONNECTION_BQ_AIRFLOW
-from utils.utilitaire import get_collected_tags, build_gcs_path, fetch_data_from_url, convert_to_ndjson
+from config.config import PROJECT_NAME, GCS_BUCKET_NAME
+from utils.utils import get_collected_tags
 
 
-COLLECTED_NAME = "NOAA_Weather_Data"
-API_LABEL = "weather"
+COLLECTED_NAME="taux_de_chomage_insee"
+BASE_URL = "https://api.insee.fr/series/BDM/V1/data/SERIES_BDM/001688370"
+SCHEDULING_CRONTAB = '0 0 1 */3 *', # Toutes les Jours à 3 mois
 
-gcs_weather = Asset(ASSET_PATH["weather"])
+
+
 
 def build_datetime_range(execution_date: datetime) ->tuple:
     start_date = execution_date.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -237,20 +237,18 @@ with DAG(
     f"{PROJECT_NAME}_{COLLECTED_NAME}",
     default_args=default_args,
     description=(
-        "Données météo (précipitations, température, neige)"
-        "Les données sont récupérées au format JSON et stockées dans GCS avec partitioning par date."
-        f"Les données sont présentes ici: {API_CONFIG[API_LABEL]['base_url']}"
+        "Taux de chômage par région - INSEE"
+        "Retourne les données trimestrielles du chômage BIT des hommes de moins de 25 ans en France métropolitaine, exprimées en milliers d'individus."
+        f"Les données sont présentes ici: {BASE_URL}"
     ),
-    start_date=datetime(2020, 1, 1),
-    end_date=datetime(2025, 1, 31),
-    schedule='5 0 * * *', # Toutes les Jours à 00:05
+    start_date=datetime(2026, 1, 1),
+    schedule=SCHEDULING_CRONTAB,
     catchup=True,
     max_active_runs=1, # Nombre de worker
 
-    tags=get_collected_tags(COLLECTED_NAME, "days"),
+    tags=get_collected_tags(COLLECTED_NAME, "quarterly"),
 ) as dag:
-    debut = EmptyOperator(task_id="debut")
-    
+   
     extract_task = PythonOperator(
         task_id='extract_data',
         python_callable=extract_data,

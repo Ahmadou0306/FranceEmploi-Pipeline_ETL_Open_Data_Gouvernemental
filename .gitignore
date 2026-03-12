@@ -6,8 +6,8 @@ logs/*
 config/gcp/*
 config/airflow.cfg
 
-
-
+dags/collected/trimestrielle/test.py
+dags/utils/delete.py
 
 
 
