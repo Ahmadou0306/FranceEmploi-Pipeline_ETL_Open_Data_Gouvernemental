@@ -3,6 +3,24 @@ from datetime import datetime
 
 from config.config import PROJECT_NAME
 
+def build_gcs_path(source_name: str, frequency: str, extension: str, extend:str=None) -> str:
+
+    VALID_FREQUENCIES = {"hourly", "daily", "weekly", "quarterly","monthly", "yearly"}
+    VALID_EXTENSIONS = {"json", "csv", "parquet"}
+    
+    if frequency not in VALID_FREQUENCIES:
+        raise ValueError(f"Fréquence '{frequency}' invalide. Valeurs acceptées: {VALID_FREQUENCIES}")
+    
+    if extension not in VALID_EXTENSIONS:
+        raise ValueError(f"Extension '{extension}' invalide. Valeurs acceptées: {VALID_EXTENSIONS}")
+    
+    # Mapping fréquence -> (partition_path, filename)
+    if extend:
+        extend_label=f"_{extend}"
+    else:
+        extend_label=""
+        
+    return f"raw/{frequency}/{source_name}{extend_label}.{extension}"
 
 def get_collected_tags(collected_name:str, frequency:str="days"):
     all_collected_tags = {
