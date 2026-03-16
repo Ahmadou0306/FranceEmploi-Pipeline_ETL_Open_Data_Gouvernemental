@@ -5,6 +5,7 @@ README.md
 logs/*
 config/gcp/*
 config/airflow.cfg
+test.py
 
 
 .claude

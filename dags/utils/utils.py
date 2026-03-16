@@ -2,6 +2,7 @@ from typing import Optional
 from datetime import datetime
 import json
 from config.config import PROJECT_NAME
+import requests
 
 VALID_FREQUENCIES = {"hourly", "daily", "weekly", "monthly", "quarterly", "yearly"}
 VALID_EXTENSIONS  = {"json", "csv", "parquet"}
@@ -72,32 +73,26 @@ def __format_filename_date__(dt: datetime, frequency: str) -> str:
     return dt.strftime(FREQUENCY_FILENAME_FORMAT[frequency])
 
 
-def build_gcs_path(
+def build_gcs_current_path(source_name: str, extension: str) -> str:
+    return f"raw/{source_name}/current/{source_name}.{extension}"
+
+
+def build_gcs_archive_path(
     source_name: str,
-    frequency:   str,
     extension:   str,
+    frequency:   str,
     dt:          Optional[datetime] = None,
 ) -> str:
-    # --- Validation ---
     if frequency not in VALID_FREQUENCIES:
         raise ValueError(
             f"Fréquence '{frequency}' invalide. Valeurs acceptées : {sorted(VALID_FREQUENCIES)}"
         )
-    if extension not in VALID_EXTENSIONS:
-        raise ValueError(
-            f"Extension '{extension}' invalide. Valeurs acceptées : {sorted(VALID_EXTENSIONS)}"
-        )
+    dt        = dt or datetime.now()
+    partition = FREQUENCY_PARTITION[frequency](dt)
+    label     = FREQUENCY_FILENAME_FORMAT[frequency](dt)
+    filename  = f"{source_name}_{label}.{extension}"
 
-    dt = dt or datetime.now()
-
-    partition  = FREQUENCY_PARTITION[frequency](dt)
-    date_label = __format_filename_date__(dt, frequency)
-    filename   = f"{source_name}_{date_label}.{extension}"
-
-    return f"raw/{frequency}/{source_name}/{partition}/{filename}"
-
-
-
+    return f"raw/{source_name}/archive/{partition}/{filename}"
 
 
 
@@ -127,3 +122,27 @@ def convert_to_ndjson(data):
     if not isinstance(data, list):
         return data
     return '\n'.join(json.dumps(record) for record in data)
+
+
+
+def fetch_xml_with_retry(url: str, params: dict, logger, max_retries:int=3) -> dict:
+    """Effectue un GET avec retry exponentiel. Lève une exception après max_retries échecs."""
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(url, params=params, timeout=30)
+            response.raise_for_status()  # lève HTTPError si 4xx/5xx
+            return response.json()
+
+        except requests.exceptions.Timeout:
+            logger.warning(f"Timeout (tentative {attempt + 1}/{max_retries})")
+
+        except requests.exceptions.HTTPError as e:
+            logger.error(f"Erreur HTTP : {e}")
+
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Erreur réseau : {e}")
+
+        if attempt < max_retries - 1:
+            time.sleep(2 ** attempt)
+
+    raise Exception(f"Echec apres {max_retries} tentatives sur {url} avec {params}")
