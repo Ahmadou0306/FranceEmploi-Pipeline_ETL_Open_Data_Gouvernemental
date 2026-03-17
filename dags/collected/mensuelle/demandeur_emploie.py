@@ -14,18 +14,15 @@ from utils.utils import build_gcs_current_path, build_gcs_archive_path, get_coll
 
 logger = logging.getLogger(__name__)
 
-COLLECTED_NAME = " offres_emploi_france_travail"
-BASE_URL = "https://data.dares.travail-emploi.gouv.fr/api/explore/v2.1/catalog/datasets/dares_offres_collectees_satisfaites_france_travail_brutes_mens/records"
+COLLECTED_NAME = "demandeurs_emploi_tranche_age"
+BASE_URL = "https://data.dares.travail-emploi.gouv.fr/api/explore/v2.1/catalog/datasets/dares_defm_age_detaille_mens/records"
 DESCRIPTION = (
-    "Nombre d'offres d'emploi collectées et satisfaites par France Travail, par département, type de contrat (durable/temporaire/occasionnel) et qualification."
-    "Données mensuelles brutes depuis décembre 1995."
+    "Nombre de demandeurs d'emploi inscrits (DEFM) ventilés par tranche d'âge détaillée et catégorie (A, B, C…). "
+    "Données mensuelles depuis 1995 à l'échelle nationale."
+    "Pas d'authentification requise."
     f"Source: {BASE_URL}"
 )
-SCHEDULING_CRONTAB = "0 0 1 * *" #Tout les 1er du mois
-
-
-
-
+SCHEDULING_CRONTAB = "0 0 1 * *" # Tout les 1er du mois
 
 # ─────────────────────────────────────────────
 # EXTRACT

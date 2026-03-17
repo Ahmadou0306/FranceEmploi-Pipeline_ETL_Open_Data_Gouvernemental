@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 from config.config import PROJECT_NAME
 import requests
+import time
 
 VALID_FREQUENCIES = {"hourly", "daily", "weekly", "monthly", "quarterly", "yearly"}
 VALID_EXTENSIONS  = {"json", "csv", "parquet"}
@@ -125,7 +126,7 @@ def convert_to_ndjson(data):
 
 
 
-def fetch_xml_with_retry(url: str, params: dict, logger, max_retries:int=3) -> dict:
+def fetch_xml_json_with_retry(url: str, params: dict, logger, max_retries:int=3) -> dict:
     """Effectue un GET avec retry exponentiel. Lève une exception après max_retries échecs."""
     for attempt in range(max_retries):
         try:
@@ -146,3 +147,4 @@ def fetch_xml_with_retry(url: str, params: dict, logger, max_retries:int=3) -> d
             time.sleep(2 ** attempt)
 
     raise Exception(f"Echec apres {max_retries} tentatives sur {url} avec {params}")
+

@@ -10,7 +10,7 @@ from airflow.providers.standard.operators.python import PythonOperator
 from google.cloud import storage
 
 from config.config import GCS_BUCKET_NAME, PROJECT_NAME
-from utils.utils import build_gcs_current_path, build_gcs_archive_path, get_collected_tags, fetch_xml_with_retry
+from utils.utils import build_gcs_current_path, build_gcs_archive_path, get_collected_tags, fetch_xml_json_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def extract_data(ti,**kwargs):
 
     while not is_last_page: 
         params = {"maxResult": maw_row_result, "page": current_page}
-        page_data = fetch_xml_with_retry(BASE_URL, params, logger, max_retries=max_retries)
+        page_data = fetch_xml_json_with_retry(BASE_URL, params, logger, max_retries=max_retries)
 
         # On extrait uniquement les observations, pas la réponse entière
         observations = page_data.get("observations", [])
@@ -82,7 +82,7 @@ def archive_current_if_exists(ti, **kwargs) -> bool:
             return False
         bucket.copy_blob(current_blob, bucket, archive_path)
         current_blob.delete()
-        logger.info(f"[archive] {current_path} → {archive_path}")
+        logger.info(f"[archive] {current_path} -> {archive_path}")
         return True
     except Exception as e:
         logger.error(f"Erreur upload GCS : {e}")

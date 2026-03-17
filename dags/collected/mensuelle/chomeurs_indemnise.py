@@ -14,18 +14,14 @@ from utils.utils import build_gcs_current_path, build_gcs_archive_path, get_coll
 
 logger = logging.getLogger(__name__)
 
-COLLECTED_NAME = " offres_emploi_france_travail"
-BASE_URL = "https://data.dares.travail-emploi.gouv.fr/api/explore/v2.1/catalog/datasets/dares_offres_collectees_satisfaites_france_travail_brutes_mens/records"
+COLLECTED_NAME = "chomeurs_indemnises_departement"
+BASE_URL = "https://data.unedic.org/api/explore/v2.1/catalog/datasets/evolution_indicateurs_cles_ac/records"
 DESCRIPTION = (
-    "Nombre d'offres d'emploi collectées et satisfaites par France Travail, par département, type de contrat (durable/temporaire/occasionnel) et qualification."
-    "Données mensuelles brutes depuis décembre 1995."
+    "Indicateurs clés de l'assurance chômage par département et par mois : nombre d'allocataires (nb_alloc), ouvertures de droits (nb_od), reprises d'emploi (nb_reprises), allocation journalière moyenne (aj_moy), durée moyenne d'indemnisation (duree_moy), dépenses totales (depense)."
+    "Données mensuelles depuis janvier 2018."
     f"Source: {BASE_URL}"
 )
-SCHEDULING_CRONTAB = "0 0 1 * *" #Tout les 1er du mois
-
-
-
-
+SCHEDULING_CRONTAB = "0 0 1 * *" # Tout les 1er du mois
 
 # ─────────────────────────────────────────────
 # EXTRACT
