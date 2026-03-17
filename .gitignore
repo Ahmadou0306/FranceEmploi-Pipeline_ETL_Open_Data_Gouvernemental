@@ -6,7 +6,7 @@ logs/*
 config/gcp/*
 config/airflow.cfg
 test.py
-
+setup_config.sh
 
 .claude
 *pycache*
