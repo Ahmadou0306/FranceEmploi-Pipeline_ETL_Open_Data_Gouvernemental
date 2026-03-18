@@ -14,7 +14,7 @@ from utils.utils import build_gcs_current_path, build_gcs_archive_path, get_coll
 
 logger = logging.getLogger(__name__)
 
-COLLECTED_NAME = " offres_emploi_france_travail"
+COLLECTED_NAME = "offres_emploi_france_travail"
 BASE_URL = "https://data.dares.travail-emploi.gouv.fr/api/explore/v2.1/catalog/datasets/dares_offres_collectees_satisfaites_france_travail_brutes_mens/records"
 DESCRIPTION = (
     "Nombre d'offres d'emploi collectées et satisfaites par France Travail, par département, type de contrat (durable/temporaire/occasionnel) et qualification."
@@ -30,39 +30,42 @@ SCHEDULING_CRONTAB = "0 0 1 * *" #Tout les 1er du mois
 # ─────────────────────────────────────────────
 # EXTRACT
 # ─────────────────────────────────────────────
-def extract_data(ti,**kwargs):
+def extract_data(ti, **kwargs):
     logger.info(f"Début extraction | URL: {BASE_URL}")
 
-    all_data = []
+    all_data    = []
     max_retries = 3
-    limit = 100
-    offset=0
+    limit       = 100
+    start_year  = 1995
+    end_year    = datetime.now().year
 
-    while True: 
-        params = {"limit": limit, "offset": offset}
-        page_data = fetch_xml_json_with_retry(BASE_URL, params, logger, max_retries=max_retries)
+    for year in range(end_year, start_year - 1, -1):  # décrémente end_year → 1995
+        offset = 0
 
-        # On extrait uniquement les observations, pas la réponse entière
-        total = page_data.get("total_count",0)
-        results = page_data.get("results", [])
-        all_data.extend(results)
+        while True:
+            params = {
+                "limit":  limit,
+                "offset": offset,
+                "where":  f"annee={year}",
+            }
+            page_data = fetch_xml_json_with_retry(BASE_URL, params, logger, max_retries=max_retries)
 
-        logger.info(
-            f"Offset {offset} - Limit {limit} récupéré "
-            f"{len(results)}"
-        )
-        if offset + limit >= total:
-            logger.info(
-                f"Pagination terminé"
-            )
-            break
-        else :
-            offset = offset+limit
+            total   = page_data.get("total_count", 0)
+            results = page_data.get("results", [])
+            all_data.extend(results)
+
+            logger.info(f"Année {year} | Offset {offset} | {len(results)}/{total} records")
+
+            if offset + limit >= total:
+                logger.info(f"Année {year} terminée — {total} records au total")
+                break
+
+            offset += limit
 
     nb_records = len(all_data)
     logger.info(f"Extraction terminée : {nb_records} enregistrements au total")
 
-    ti.xcom_push(key=f"{COLLECTED_NAME}_data", value=json.dumps(all_data, ensure_ascii=False))
+    ti.xcom_push(key=f"{COLLECTED_NAME}_data",      value=json.dumps(all_data, ensure_ascii=False))
     ti.xcom_push(key=f"{COLLECTED_NAME}_nb_record", value=nb_records)
     return nb_records
 

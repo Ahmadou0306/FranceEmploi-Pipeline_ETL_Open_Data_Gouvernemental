@@ -32,7 +32,7 @@ variable "zone" {
 variable "credentials_file" {
   description = "Chemin du credentials"
   type        = string
-  default     = "../config/gcp/airflow-gcp-key.json"
+  default     = "config/service_account_key.json"
 }
 
 variable "environment" {
@@ -40,3 +40,10 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+variable "kms_key_name" {
+  description = "Nom complet de la clé KMS pour le chiffrement CMEK (laisser vide pour désactiver)"
+  type        = string
+  default     = ""
+}
+

@@ -90,7 +90,7 @@ def build_gcs_archive_path(
         )
     dt        = dt or datetime.now()
     partition = FREQUENCY_PARTITION[frequency](dt)
-    label     = FREQUENCY_FILENAME_FORMAT[frequency](dt)
+    label     = __format_filename_date__(dt, frequency)  # ✅ utilise la fonction dédiée
     filename  = f"{source_name}_{label}.{extension}"
 
     return f"raw/{source_name}/archive/{partition}/{filename}"
