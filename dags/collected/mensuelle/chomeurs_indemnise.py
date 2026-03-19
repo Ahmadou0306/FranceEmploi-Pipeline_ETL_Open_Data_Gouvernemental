@@ -36,27 +36,31 @@ def extract_data(ti, **kwargs):
     end_year    = datetime.now().year
 
     for year in range(end_year, start_year - 1, -1):  # décrémente end_year → 1995
-        offset = 0
+        where_clause = f"date LIKE '{year}%'"
 
-        while True:
+        count_data = fetch_xml_json_with_retry(
+            BASE_URL,
+            {"limit": 1, "offset": 0, "where": where_clause},
+            logger,
+            max_retries=max_retries,
+        )
+        total = count_data.get("total_count", 0)
+        logger.info(f"Année {year} : {total} enregistrements")
+
+        offset = 0
+        while offset < total:
             params = {
                 "limit":  limit,
                 "offset": offset,
-                "where":  f"annee={year}",
+                "where":  where_clause,
             }
             page_data = fetch_xml_json_with_retry(BASE_URL, params, logger, max_retries=max_retries)
-
-            total   = page_data.get("total_count", 0)
             results = page_data.get("results", [])
             all_data.extend(results)
-
             logger.info(f"Année {year} | Offset {offset} | {len(results)}/{total} records")
-
-            if offset + limit >= total:
-                logger.info(f"Année {year} terminée — {total} records au total")
-                break
-
             offset += limit
+
+        logger.info(f"Année {year} terminée — {total} records au total")
 
     nb_records = len(all_data)
     logger.info(f"Extraction terminée : {nb_records} enregistrements au total")

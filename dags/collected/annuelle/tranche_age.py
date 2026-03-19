@@ -26,7 +26,8 @@ DESCRIPTION    = (
 )
 SCHEDULING_CRONTAB = "0 0 1 1 *"
 MAX_PAGES          = 500   # Garde-fou contre une boucle infinie
-MAX_ROW_RESULT     = 10000 # Nombre de résultats demandés par page
+MAX_ROW_RESULT     = 1000  # Taille de page — rester sous la limite de 10 000 résultats accessibles
+START_YEAR         = 2006  # Début du recensement annuel tournant
 
 
 # ─────────────────────────────────────────────
@@ -71,30 +72,39 @@ def extract_data(ti, **kwargs) -> int:
     logger.info(f"Début extraction | URL: {BASE_URL}")
 
     all_observations = []
-    current_page     = 1
-    is_last_page     = False
     max_retries      = 3
+    end_year         = datetime.now().year
 
-    while not is_last_page and current_page <= MAX_PAGES:
-        params    = {"maxResult": MAX_ROW_RESULT, "page": current_page}
-        page_data = fetch_xml_json_with_retry(BASE_URL, params, logger, max_retries=max_retries)
+    for year in range(end_year, START_YEAR - 1, -1):
+        current_page = 1
+        is_last_page = False
 
-        observations = page_data.get("observations", [])
-        all_observations.extend(observations)
-        is_last_page = page_data.get("paging", {}).get("isLast", True)
+        while not is_last_page and current_page <= MAX_PAGES:
+            params = {
+                "maxResult":   MAX_ROW_RESULT,
+                "page":        current_page,
+                "startPeriod": str(year),
+                "endPeriod":   str(year),
+            }
+            page_data = fetch_xml_json_with_retry(BASE_URL, params, logger, max_retries=max_retries)
 
-        logger.info(
-            f"Page {current_page} récupérée — "
-            f"{len(observations)} obs | isLast={is_last_page}"
-        )
-        current_page += 1
+            observations = page_data.get("observations", [])
+            all_observations.extend(observations)
+            is_last_page = page_data.get("paging", {}).get("isLast", True)
 
-    # Avertissement si la limite de sécurité est atteinte
-    if current_page > MAX_PAGES:
-        logger.warning(
-            f"[extract] Limite de sécurité atteinte ({MAX_PAGES} pages). "
-            "Les données peuvent être incomplètes."
-        )
+            logger.info(
+                f"Année {year} | Page {current_page} — "
+                f"{len(observations)} obs | isLast={is_last_page}"
+            )
+            current_page += 1
+
+        if current_page > MAX_PAGES:
+            logger.warning(
+                f"[extract] Année {year} — limite de sécurité atteinte ({MAX_PAGES} pages). "
+                "Les données peuvent être incomplètes."
+            )
+
+        logger.info(f"Année {year} terminée — {len(observations)} obs sur cette page")
 
     nb_records = len(all_observations)
     logger.info(f"Extraction terminée : {nb_records} enregistrements au total")
