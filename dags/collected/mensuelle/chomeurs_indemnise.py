@@ -36,7 +36,7 @@ def extract_data(ti, **kwargs):
     end_year    = datetime.now().year
 
     for year in range(end_year, start_year - 1, -1):  # décrémente end_year → 1995
-        where_clause = f"date LIKE '{year}%'"
+        where_clause = f"year(annee_mois) = {year}"
 
         count_data = fetch_xml_json_with_retry(
             BASE_URL,
@@ -61,6 +61,9 @@ def extract_data(ti, **kwargs):
             offset += limit
 
         logger.info(f"Année {year} terminée — {total} records au total")
+
+    GEO_FIELDS = {"geo_departement", "geo_centre"}
+    all_data = [{k: v for k, v in record.items() if k not in GEO_FIELDS} for record in all_data]
 
     nb_records = len(all_data)
     logger.info(f"Extraction terminée : {nb_records} enregistrements au total")
@@ -93,7 +96,7 @@ def archive_current_if_exists(ti, **kwargs) -> bool:
         logger.info(f"[archive] {current_path} -> {archive_path}")
         return True
     except Exception as e:
-        logger.error(f"Erreur upload GCS : {e}")
+        logger.error(f"Erreur archivage GCS : {e}")
         raise
 
 # ─────────────────────────────────────────────
@@ -145,7 +148,7 @@ with DAG(
     f"{PROJECT_NAME}_{COLLECTED_NAME}",
     default_args=default_args,
     description=DESCRIPTION,
-    start_date=datetime(2026, 1, 1),
+    start_date=datetime(2026, 3, 1),
     schedule=SCHEDULING_CRONTAB,
     catchup=True,
     max_active_runs=1,
@@ -160,7 +163,7 @@ with DAG(
     extract_task = PythonOperator(
         task_id="extract_data",
         python_callable=extract_data,
-        trigger_rule="all_success",
+        trigger_rule="all_done",
     )
 
     upload_task = PythonOperator(

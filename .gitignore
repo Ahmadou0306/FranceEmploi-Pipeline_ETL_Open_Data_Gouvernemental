@@ -7,11 +7,10 @@ config/gcp/*
 config/airflow.cfg
 terraform/config/service_account_key.json
 utils.txt
-test.py
 setup_config.sh
 terraform/.terraform
 .terraform.lock.hcl
-
+*.md
 .claude
 *pycache*
 !.gitkeep

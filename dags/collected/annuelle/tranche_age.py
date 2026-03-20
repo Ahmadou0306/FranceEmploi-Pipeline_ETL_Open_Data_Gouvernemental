@@ -166,7 +166,7 @@ with DAG(
     f"{PROJECT_NAME}_{COLLECTED_NAME}",
     default_args=default_args,
     description=DESCRIPTION,
-    start_date=datetime(2026, 1, 1),
+    start_date=datetime(2026, 3, 1),
     schedule=SCHEDULING_CRONTAB,
     catchup=True,
     max_active_runs=1,
@@ -181,6 +181,7 @@ with DAG(
     extract_task = PythonOperator(
         task_id="extract_data",
         python_callable=extract_data,
+        trigger_rule="all_done",
     )
 
     upload_task = PythonOperator(

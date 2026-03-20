@@ -97,7 +97,7 @@ def archive_current_if_exists(ti, **kwargs) -> bool:
         logger.info(f"[archive] {current_path} -> {archive_path}")
         return True
     except Exception as e:
-        logger.error(f"Erreur upload GCS : {e}")
+        logger.error(f"Erreur archivage GCS : {e}")
         raise
 
 # ─────────────────────────────────────────────
@@ -149,7 +149,7 @@ with DAG(
     f"{PROJECT_NAME}_{COLLECTED_NAME}",
     default_args=default_args,
     description=DESCRIPTION,
-    start_date=datetime(2026, 1, 1),
+    start_date=datetime(2026, 3, 1),
     schedule=SCHEDULING_CRONTAB,
     catchup=True,
     max_active_runs=1,
@@ -164,7 +164,7 @@ with DAG(
     extract_task = PythonOperator(
         task_id="extract_data",
         python_callable=extract_data,
-        trigger_rule="all_success",
+        trigger_rule="all_done",
     )
 
     upload_task = PythonOperator(
