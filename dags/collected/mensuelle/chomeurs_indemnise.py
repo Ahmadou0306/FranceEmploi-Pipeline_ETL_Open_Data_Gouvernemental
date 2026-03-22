@@ -26,39 +26,49 @@ SCHEDULING_CRONTAB = "0 0 1 * *" # Tout les 1er du mois
 # ─────────────────────────────────────────────
 # EXTRACT
 # ─────────────────────────────────────────────
-def extract_data(ti,**kwargs):
+def extract_data(ti, **kwargs):
     logger.info(f"Début extraction | URL: {BASE_URL}")
 
-    all_data = []
+    all_data    = []
     max_retries = 3
-    limit = 100
-    offset=0
+    limit       = 100
+    start_year  = 1995
+    end_year    = datetime.now().year
 
-    while True: 
-        params = {"limit": limit, "offset": offset}
-        page_data = fetch_xml_json_with_retry(BASE_URL, params, logger, max_retries=max_retries)
+    for year in range(end_year, start_year - 1, -1):  # décrémente end_year → 1995
+        where_clause = f"year(annee_mois) = {year}"
 
-        # On extrait uniquement les observations, pas la réponse entière
-        total = page_data.get("total_count",0)
-        results = page_data.get("results", [])
-        all_data.extend(results)
-
-        logger.info(
-            f"Offset {offset} - Limit {limit} récupéré "
-            f"{len(results)}"
+        count_data = fetch_xml_json_with_retry(
+            BASE_URL,
+            {"limit": 1, "offset": 0, "where": where_clause},
+            logger,
+            max_retries=max_retries,
         )
-        if offset + limit >= total:
-            logger.info(
-                f"Pagination terminé"
-            )
-            break
-        else :
-            offset = offset+limit
+        total = count_data.get("total_count", 0)
+        logger.info(f"Année {year} : {total} enregistrements")
+
+        offset = 0
+        while offset < total:
+            params = {
+                "limit":  limit,
+                "offset": offset,
+                "where":  where_clause,
+            }
+            page_data = fetch_xml_json_with_retry(BASE_URL, params, logger, max_retries=max_retries)
+            results = page_data.get("results", [])
+            all_data.extend(results)
+            logger.info(f"Année {year} | Offset {offset} | {len(results)}/{total} records")
+            offset += limit
+
+        logger.info(f"Année {year} terminée — {total} records au total")
+
+    GEO_FIELDS = {"geo_departement", "geo_centre"}
+    all_data = [{k: v for k, v in record.items() if k not in GEO_FIELDS} for record in all_data]
 
     nb_records = len(all_data)
     logger.info(f"Extraction terminée : {nb_records} enregistrements au total")
 
-    ti.xcom_push(key=f"{COLLECTED_NAME}_data", value=json.dumps(all_data, ensure_ascii=False))
+    ti.xcom_push(key=f"{COLLECTED_NAME}_data",      value=json.dumps(all_data, ensure_ascii=False))
     ti.xcom_push(key=f"{COLLECTED_NAME}_nb_record", value=nb_records)
     return nb_records
 
@@ -86,7 +96,7 @@ def archive_current_if_exists(ti, **kwargs) -> bool:
         logger.info(f"[archive] {current_path} -> {archive_path}")
         return True
     except Exception as e:
-        logger.error(f"Erreur upload GCS : {e}")
+        logger.error(f"Erreur archivage GCS : {e}")
         raise
 
 # ─────────────────────────────────────────────
@@ -138,7 +148,7 @@ with DAG(
     f"{PROJECT_NAME}_{COLLECTED_NAME}",
     default_args=default_args,
     description=DESCRIPTION,
-    start_date=datetime(2026, 1, 1),
+    start_date=datetime(2026, 3, 1),
     schedule=SCHEDULING_CRONTAB,
     catchup=True,
     max_active_runs=1,
@@ -153,7 +163,7 @@ with DAG(
     extract_task = PythonOperator(
         task_id="extract_data",
         python_callable=extract_data,
-        trigger_rule="all_success",
+        trigger_rule="all_done",
     )
 
     upload_task = PythonOperator(

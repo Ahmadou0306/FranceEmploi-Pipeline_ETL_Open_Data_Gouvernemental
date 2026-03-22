@@ -88,12 +88,11 @@ def build_gcs_archive_path(
         raise ValueError(
             f"Fréquence '{frequency}' invalide. Valeurs acceptées : {sorted(VALID_FREQUENCIES)}"
         )
-    dt        = dt or datetime.now()
-    partition = FREQUENCY_PARTITION[frequency](dt)
-    label     = FREQUENCY_FILENAME_FORMAT[frequency](dt)
-    filename  = f"{source_name}_{label}.{extension}"
+    dt       = dt or datetime.now()
+    label    = __format_filename_date__(dt, frequency)
+    filename = f"{source_name}_{label}.{extension}"
 
-    return f"raw/{source_name}/archive/{partition}/{filename}"
+    return f"raw/{source_name}/archive/{filename}"
 
 
 

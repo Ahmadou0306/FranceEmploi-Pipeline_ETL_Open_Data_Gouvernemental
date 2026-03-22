@@ -1,0 +1,10 @@
+
+target/
+dbt_packages/
+logs/
+
+# Connexion Snowflake — ne jamais commiter
+profiles.yml
+.env
+token-secret.txt
+*.txt

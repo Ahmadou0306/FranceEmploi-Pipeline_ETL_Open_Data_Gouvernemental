@@ -5,9 +5,14 @@ README.md
 logs/*
 config/gcp/*
 config/airflow.cfg
-test.py
-setup_config.sh
-
+airflow-gcp-key.json
+service_account_key.json
+config/*.json
+*.json.key
+utils.txt
+infra/.terraform
+.terraform.lock.hcl
+*.md
 .claude
 *pycache*
 !.gitkeep
