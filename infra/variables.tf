@@ -9,6 +9,11 @@ variable "email_props" {
   type        = string
   default     = "ahmadou.ndiaye030602@gmail.com" # A supprimer
 }
+variable "gcs_storage_service_account" {
+  description = "SA Snowflake pour GCS - fourni par DESC INTEGRATION gcs_snowpipe_integration (champ STORAGE_GCP_SERVICE_ACCOUNT)"
+  type        = string
+  default     = "vacwjqyyoo@awseuwest3-ba98.iam.gserviceaccount.com" # à supprimer
+}
 
 variable "gcp_pubsub_service_account" {
   description = "SA Snowflake pour Pub/Sub - fourni par DESC INTEGRATION notif_* (champ GCP_PUBSUB_SERVICE_ACCOUNT)"
@@ -16,11 +21,6 @@ variable "gcp_pubsub_service_account" {
   default     = "xpofmohbyo@awseuwest3-ba98.iam.gserviceaccount.com" # à supprimer
 }
 
-variable "gcs_storage_service_account" {
-  description = "SA Snowflake pour GCS - fourni par DESC INTEGRATION gcs_snowpipe_integration (champ STORAGE_GCP_SERVICE_ACCOUNT)"
-  type        = string
-  default     = "xpofmohbyo@awseuwest3-ba98.iam.gserviceaccount.com" # à supprimer
-}
 
 variable "project_name" {
   description = "Nom du projet "

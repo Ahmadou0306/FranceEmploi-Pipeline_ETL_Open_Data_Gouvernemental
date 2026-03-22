@@ -57,56 +57,53 @@ LIST @FRANCE_EMPLOI_DB.PUBLIC.GCS_TRANCHE_AGE_LOAD;
 
 -- Chômeurs indemnisés : JSON tableau, 1 objet = 1 ligne département/mois
 SELECT
-    value:aj_moy::FLOAT                                    AS aj_moy,
-    value:annee_mois::STRING                               AS annee_mois,
-    value:code_departement::STRING                         AS code_departement,
-    value:departement::STRING                              AS departement,
-    value:depense::FLOAT                                   AS depense,
-    value:duree_moy::INTEGER                               AS duree_moy,
-    value:fdd::INTEGER                                     AS fdd,
-    value:montant_indemnisation_net_tous::FLOAT            AS montant_indemnisation_net_tous,
-    value:montant_indemnisation_net_travaille::FLOAT       AS montant_indemnisation_net_travaille,
-    value:montant_indemnisation_net_travaille_pas::FLOAT   AS montant_indemnisation_net_travaille_pas,
-    value:nb_alloc::INTEGER                                AS nb_alloc,
-    value:nb_indemnises::INTEGER                           AS nb_indemnises,
-    value:nb_indemnises_aref::INTEGER                      AS nb_indemnises_aref,
-    value:nb_indemnises_asp::INTEGER                       AS nb_indemnises_asp,
-    value:nb_od::INTEGER                                   AS nb_od,
-    value:nb_od_ini::INTEGER                               AS nb_od_ini,
-    value:nb_reprises::INTEGER                             AS nb_reprises,
-    value:part_travail::FLOAT                              AS part_travail,
-    value:part_travail_ind::FLOAT                          AS part_travail_ind,
-    value:region::STRING                                   AS region
-FROM @FRANCE_EMPLOI_DB.PUBLIC.GCS_CHOMEURS_INDEMNISES_LOAD,
-LATERAL FLATTEN(INPUT => $1)
+    $1:aj_moy::FLOAT                                    AS aj_moy,
+    $1:annee_mois::STRING                               AS annee_mois,
+    $1:code_departement::STRING                         AS code_departement,
+    $1:departement::STRING                              AS departement,
+    $1:depense::FLOAT                                   AS depense,
+    $1:duree_moy::INTEGER                               AS duree_moy,
+    $1:fdd::INTEGER                                     AS fdd,
+    $1:montant_indemnisation_net_tous::FLOAT            AS montant_indemnisation_net_tous,
+    $1:montant_indemnisation_net_travaille::FLOAT       AS montant_indemnisation_net_travaille,
+    $1:montant_indemnisation_net_travaille_pas::FLOAT   AS montant_indemnisation_net_travaille_pas,
+    $1:nb_alloc::INTEGER                                AS nb_alloc,
+    $1:nb_indemnises::INTEGER                           AS nb_indemnises,
+    $1:nb_indemnises_aref::INTEGER                      AS nb_indemnises_aref,
+    $1:nb_indemnises_asp::INTEGER                       AS nb_indemnises_asp,
+    $1:nb_od::INTEGER                                   AS nb_od,
+    $1:nb_od_ini::INTEGER                               AS nb_od_ini,
+    $1:nb_reprises::INTEGER                             AS nb_reprises,
+    $1:part_travail::FLOAT                              AS part_travail,
+    $1:part_travail_ind::FLOAT                          AS part_travail_ind,
+    $1:region::STRING                                   AS region
+FROM @FRANCE_EMPLOI_DB.PUBLIC.GCS_CHOMEURS_INDEMNISES_LOAD (PATTERN => '.*\\.json')
 LIMIT 10;
 
 -- Demandeurs d'emploi par tranche d'âge : JSON tableau
 SELECT
-    value:age_detaille::STRING                   AS age_detaille,
-    value:categorie::STRING                      AS categorie,
-    value:champ::STRING                          AS champ,
-    value:date::STRING                           AS date,
-    value:nombre_de_demandeurs_d_emploi::INTEGER AS nombre_de_demandeurs_d_emploi,
-    value:type_de_donnees::STRING                AS type_de_donnees
-FROM @FRANCE_EMPLOI_DB.PUBLIC.GCS_DEMANDEURS_EMPLOI_TRANCHE_AGE_LOAD,
-LATERAL FLATTEN(INPUT => $1)
+    $1:age_detaille::STRING                   AS age_detaille,
+    $1:categorie::STRING                      AS categorie,
+    $1:champ::STRING                          AS champ,
+    $1:date::STRING                           AS date,
+    $1:nombre_de_demandeurs_d_emploi::INTEGER AS nombre_de_demandeurs_d_emploi,
+    $1:type_de_donnees::STRING                AS type_de_donnees
+FROM @FRANCE_EMPLOI_DB.PUBLIC.GCS_DEMANDEURS_EMPLOI_TRANCHE_AGE_LOAD (PATTERN => '.*\\.json')
 LIMIT 10;
 
 -- Offres d'emploi France Travail : JSON tableau
 SELECT
-    value:code_departement::STRING          AS code_departement,
-    value:code_region::STRING               AS code_region,
-    value:date::STRING                      AS date,
-    value:departement::STRING               AS departement,
-    value:nombre_d_offres_d_emploi::INTEGER AS nombre_d_offres_d_emploi,
-    value:qualification::STRING             AS qualification,
-    value:region::STRING                    AS region,
-    value:type_d_emploi::STRING             AS type_d_emploi,
-    value:type_d_offre_d_emploi::STRING     AS type_d_offre_d_emploi,
-    value:type_de_donnees::STRING           AS type_de_donnees
-FROM @FRANCE_EMPLOI_DB.PUBLIC.GCS_OFFRES_EMPLOI_FRANCE_TRAVAIL_LOAD,
-LATERAL FLATTEN(INPUT => $1)
+    $1:code_departement::STRING          AS code_departement,
+    $1:code_region::STRING               AS code_region,
+    $1:date::STRING                      AS date,
+    $1:departement::STRING               AS departement,
+    $1:nombre_d_offres_d_emploi::INTEGER AS nombre_d_offres_d_emploi,
+    $1:qualification::STRING             AS qualification,
+    $1:region::STRING                    AS region,
+    $1:type_d_emploi::STRING             AS type_d_emploi,
+    $1:type_d_offre_d_emploi::STRING     AS type_d_offre_d_emploi,
+    $1:type_de_donnees::STRING           AS type_de_donnees
+FROM @FRANCE_EMPLOI_DB.PUBLIC.GCS_OFFRES_EMPLOI_FRANCE_TRAVAIL_LOAD (PATTERN => '.*\\.json')
 LIMIT 10;
 
 -- Tranche d'âge (INSEE) : JSON imbriqué (pas de tableau), 1 fichier = 1 objet

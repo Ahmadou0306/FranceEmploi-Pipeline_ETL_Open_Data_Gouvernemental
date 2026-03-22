@@ -82,6 +82,7 @@ SELECT SYSTEM$PIPE_STATUS('FRANCE_EMPLOI_DB.PUBLIC.PIPE_TRANCHE_AGE');
 
 -- ============================================================
 -- CONTROLE - Vérification du contenu des tables RAW
+-- Patienter qeuelque minutes aprés le pipe (le temps dépend de si vous utiliser votre propre warehouse ou celui proposé)
 -- ============================================================
 
 SELECT * FROM FRANCE_EMPLOI_DB.STAGING.CHOMEURS_INDEMNISES_RAW          LIMIT 10;
