@@ -10,6 +10,17 @@ variable "email_props" {
   default     = "ahmadou.ndiaye030602@gmail.com" # A supprimer
 }
 
+variable "gcp_pubsub_service_account" {
+  description = "SA Snowflake pour Pub/Sub - fourni par DESC INTEGRATION notif_* (champ GCP_PUBSUB_SERVICE_ACCOUNT)"
+  type        = string
+  default     = "xpofmohbyo@awseuwest3-ba98.iam.gserviceaccount.com" # à supprimer
+}
+
+variable "gcs_storage_service_account" {
+  description = "SA Snowflake pour GCS - fourni par DESC INTEGRATION gcs_snowpipe_integration (champ STORAGE_GCP_SERVICE_ACCOUNT)"
+  type        = string
+  default     = "xpofmohbyo@awseuwest3-ba98.iam.gserviceaccount.com" # à supprimer
+}
 
 variable "project_name" {
   description = "Nom du projet "
@@ -47,17 +58,6 @@ variable "kms_key_name" {
   default     = ""
 }
 
-variable "gcp_pubsub_service_account" {
-  description = "SA Snowflake pour Pub/Sub - fourni par DESC INTEGRATION notif_* (champ GCP_PUBSUB_SERVICE_ACCOUNT)"
-  type        = string
-  default     = "xpofmohbyo@awseuwest3-ba98.iam.gserviceaccount.com" # à remplacer
-}
-
-variable "gcs_storage_service_account" {
-  description = "SA Snowflake pour GCS - fourni par DESC INTEGRATION gcs_snowpipe_integration (champ STORAGE_GCP_SERVICE_ACCOUNT)"
-  type        = string
-  default     = "xpofmohbyo@awseuwest3-ba98.iam.gserviceaccount.com" # à remplacer après DESC INTEGRATION gcs_snowpipe_integration
-}
 
 locals {
   flux = {
