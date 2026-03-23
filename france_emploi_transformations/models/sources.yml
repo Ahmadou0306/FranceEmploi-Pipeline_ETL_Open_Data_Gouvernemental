@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw_data
+    database: FRANCE_EMPLOI_DB
+    schema: STAGING
+    tables:
+      - name: CHOMEURS_INDEMNISES_RAW
+        description: "Indicateurs clés de l'assurance chômage par département et par mois : nombre d'allocataires (nb_alloc), ouvertures de droits (nb_od), reprises d'emploi (nb_reprises), allocation journalière moyenne (aj_moy), durée moyenne d'indemnisation (duree_moy), dépenses totales (depense)."
+      - name: DEMANDEURS_EMPLOI_TRANCHE_AGE_RAW
+        description: "Nombre de demandeurs d'emploi inscrits (DEFM) ventilés par tranche d'âge détaillée et catégorie (A, B, C…). Données mensuelles depuis 1995 à l'échelle nationale."
+      - name: OFFRES_EMPLOI_FRANCE_TRAVAIL_RAW
+        description: "Nombre d'offres d'emploi collectées et satisfaites par France Travail, par département, type de contrat (durable/temporaire/occasionnel) et qualification."
+      - name: TRANCHE_AGE_RAW
+        description: "Population par sexe, tranche d'âge (Y_LT15, Y15T24, Y25T54, Y55T64, Y_GE65) et département, issue du Recensement de la Population. Données annuelles depuis 2018. Pas d'authentification requise."	
