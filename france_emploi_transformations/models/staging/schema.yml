@@ -1,0 +1,134 @@
+version: 2
+
+models:
+  - name: chomeurs_indemnises
+    description: "Indicateurs mensuels de l'assurance chômage par département, après typage et nettoyage depuis la couche raw."
+    columns:
+      - name: annee_mois
+        description: "Mois de référence (premier jour du mois)"
+        tests:
+          - not_null
+      - name: code_departement
+        description: "Code INSEE du département"
+        tests:
+          - not_null
+      - name: departement
+        description: "Libellé du département"
+        tests:
+          - not_null
+      - name: region
+        description: "Libellé de la région"
+        tests:
+          - not_null
+      - name: nb_alloc
+        description: "Nombre d'allocataires"
+        tests:
+          - not_null
+      - name: nb_indemnises
+        description: "Nombre d'indemnisés"
+        tests:
+          - not_null
+      - name: aj_moy
+        description: "Allocation journalière moyenne (€)"
+      - name: depense
+        description: "Dépenses totales d'indemnisation (€)"
+      - name: duree_moy
+        description: "Durée moyenne d'indemnisation (jours)"
+      - name: nb_od
+        description: "Nombre d'ouvertures de droits"
+      - name: nb_reprises
+        description: "Nombre de reprises d'emploi"
+  - name: demandeur_emploi_tranche_age
+    description: "Demandeurs d'emploi (DEFM) par tranche d'âge et catégorie, données mensuelles nationales."
+    columns:
+      - name: date
+        description: "Date de référence"
+        tests:
+          - not_null
+      - name: age_detaille
+        description: "Tranche d'âge détaillée"
+        tests:
+          - not_null
+      - name: categorie
+        description: "Catégorie de demandeur d'emploi (A, B, C...)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["A", "B", "C", "D", "E", "ABC"]
+      - name: nombre_de_demandeurs_d_emploi
+        description: "Nombre de demandeurs d'emploi inscrits"
+        tests:
+          - not_null
+      - name: champ
+        description: "Champ géographique"
+      - name: type_de_donnees
+        description: "Type de données (CVS, brut...)"
+  - name: offres_emploi_france_travail
+    description: "Offres d'emploi collectées par France Travail, par département, type de contrat et qualification."
+    columns:
+      - name: date
+        description: "Date de référence"
+        tests:
+          - not_null
+      - name: code_departement
+        description: "Code INSEE du département"
+        tests:
+          - not_null
+      - name: departement
+        description: "Libellé du département"
+        tests:
+          - not_null
+      - name: code_region
+        description: "Code de la région"
+      - name: region
+        description: "Libellé de la région"
+      - name: nombre_d_offres_d_emploi
+        description: "Nombre d'offres d'emploi"
+        tests:
+          - not_null
+      - name: type_d_offre_d_emploi
+        description: "Type d'offre (collectée / satisfaite)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Offres collectées", "Offres satisfaites"]
+      - name: type_d_emploi
+        description: "Type d'emploi (durable, temporaire, occasionnel)"
+        tests:
+          - accepted_values:
+              values: ["Emploi durable", "Emploi temporaire", "Emploi occasionnel"]
+      - name: qualification
+        description: "Niveau de qualification requis"
+      - name: type_de_donnees
+        description: "Type de données (CVS, brut...)"
+  - name: tranche_age
+    description: "Population par sexe, tranche d'âge et département, issue du Recensement de la Population."
+    columns:
+      - name: time_period
+        description: "Année de référence"
+        tests:
+          - not_null
+      - name: geo
+        description: "Code géographique (département)"
+        tests:
+          - not_null
+      - name: age
+        description: "Tranche d'âge (Y_LT15, Y15T24, Y25T54, Y55T64, Y_GE65)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Y_LT15", "Y15T24", "Y25T54", "Y55T64", "Y_GE65"]
+      - name: sex
+        description: "Sexe (M, F, T)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["M", "F", "T"]
+      - name: rp_measure
+        description: "Mesure du recensement"
+        tests:
+          - not_null
+      - name: obs_value_niveau
+        description: "Valeur observée (population)"
+        tests:
+          - not_null

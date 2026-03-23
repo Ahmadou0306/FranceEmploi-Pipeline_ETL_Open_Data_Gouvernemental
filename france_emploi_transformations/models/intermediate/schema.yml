@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: int_territoire_chomage_population
+    description: "Jointure chômeurs indemnisés x population active (15-64 ans) par département et mois. Calcule le taux de chômage indemnisé."
+    columns:
+      - name: annee_mois
+        tests: [not_null]
+      - name: code_departement
+        tests: [not_null]
+      - name: taux_chomage_indemnise
+        description: "nb_alloc / population_active * 100"
+
+  - name: int_territoire_offres_enrichies
+    description: "Offres collectées normalisées par population active. Filtre sur 'Offres collectées' uniquement."
+    columns:
+      - name: date
+        tests: [not_null]
+      - name: code_departement
+        tests: [not_null]
+      - name: nb_offres_collectees
+        tests: [not_null]
+      - name: offres_pour_1000_actifs
+        description: "nb_offres / population_active * 1000"

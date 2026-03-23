@@ -7,10 +7,10 @@ CREATE DATABASE IF NOT EXISTS FRANCE_EMPLOI_DB;
 
 USE DATABASE FRANCE_EMPLOI_DB;
 
--- Schémas de la chaîne de transformation : STAGING → INTERMEDIATE → SMART
+-- Schémas de la chaîne de transformation : STAGING → INTERMEDIATE → MARTS
 CREATE SCHEMA IF NOT EXISTS STAGING;       -- Zone d'atterrissage : JSON brut + tables typées
 CREATE SCHEMA IF NOT EXISTS INTERMEDIATE;  -- Données nettoyées et enrichies
-CREATE SCHEMA IF NOT EXISTS SMART;         -- Agrégats prêts pour l'analyse
+CREATE SCHEMA IF NOT EXISTS MARTS;         -- Agrégats prêts pour l'analyse
 
 USE SCHEMA FRANCE_EMPLOI_DB.PUBLIC;
 

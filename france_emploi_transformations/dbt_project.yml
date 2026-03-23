@@ -38,6 +38,6 @@ models:
     intermediate:
       +materialized: view    # Nettoyage, jointures
       +schema: INTERMEDIATE
-    smart:
+    marts:
       +materialized: table    # Agrégats finaux pour l'analyse
-      +schema: SMART
+      +schema: MARTS
