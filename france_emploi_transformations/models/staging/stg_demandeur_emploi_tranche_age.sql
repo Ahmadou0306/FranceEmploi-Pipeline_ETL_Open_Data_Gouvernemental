@@ -8,7 +8,7 @@ table_formatted AS (
         raw_data:"age_detaille"::STRING                   AS age_detaille,
         raw_data:"categorie"::STRING                      AS categorie,
         raw_data:"champ"::STRING                          AS champ,
-        raw_data:"date"::DATE                             AS date,
+        TO_DATE(raw_data:"date"::STRING || '-01', 'YYYY-MM-DD') AS date,
         raw_data:"nombre_de_demandeurs_d_emploi"::INTEGER AS nombre_de_demandeurs_d_emploi,
         raw_data:"type_de_donnees"::STRING                AS type_de_donnees
     FROM source

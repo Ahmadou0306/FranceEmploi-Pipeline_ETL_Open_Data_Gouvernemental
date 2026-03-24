@@ -7,7 +7,7 @@ table_formatted AS (
     SELECT
         raw_data:"code_departement"::STRING          AS code_departement,
         raw_data:"code_region"::STRING               AS code_region,
-        raw_data:"date"::DATE                        AS date,
+        TO_DATE(raw_data:"date"::STRING || '-01', 'YYYY-MM-DD') AS date,
         raw_data:"departement"::STRING               AS departement,
         raw_data:"nombre_d_offres_d_emploi"::INTEGER AS nombre_d_offres_d_emploi,
         raw_data:"qualification"::STRING             AS qualification,
