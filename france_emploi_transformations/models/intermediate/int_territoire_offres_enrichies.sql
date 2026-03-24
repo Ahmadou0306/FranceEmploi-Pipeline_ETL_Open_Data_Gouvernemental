@@ -1,7 +1,16 @@
 {{ config(materialized='view') }}
 
 WITH offres AS (
-    SELECT * FROM {{ ref('stg_offres_emploi_france_travail') }}
+    SELECT
+        DATE_TRUNC('month', date) AS date,
+        code_departement,
+        departement,
+        code_region,
+        region,
+        type_d_emploi,
+        qualification,
+        nombre_d_offres_d_emploi
+    FROM {{ ref('stg_offres_emploi_france_travail') }}
     WHERE type_d_offre_d_emploi = 'Offres collectées'
 ),
 

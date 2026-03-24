@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    cluster_by=['code_departement']
+) }}
 
 -- Snapshot du marché du travail par département à la dernière période disponible.
 -- Sert de vue synthétique pour les dashboards "état actuel" (une ligne par département).

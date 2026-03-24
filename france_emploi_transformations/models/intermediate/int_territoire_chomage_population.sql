@@ -1,7 +1,19 @@
 {{ config(materialized='view') }}
 
 WITH chomeurs AS (
-    SELECT * FROM {{ ref('stg_chomeurs_indemnises') }}
+    SELECT
+        DATE_TRUNC('month', annee_mois) AS annee_mois,
+        code_departement,
+        departement,
+        region,
+        nb_alloc,
+        nb_indemnises,
+        nb_od,
+        nb_reprises,
+        aj_moy,
+        depense,
+        duree_moy
+    FROM {{ ref('stg_chomeurs_indemnises') }}
 ),
 
 -- Population active (15-64 ans) par département et année

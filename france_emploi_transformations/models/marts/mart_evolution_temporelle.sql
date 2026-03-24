@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    cluster_by=['annee_mois', 'code_departement']
+) }}
 
 -- Série temporelle mensuelle par département avec évolution mois sur mois (M/M-1).
 -- Permet de suivre la dynamique du marché du travail dans le temps.

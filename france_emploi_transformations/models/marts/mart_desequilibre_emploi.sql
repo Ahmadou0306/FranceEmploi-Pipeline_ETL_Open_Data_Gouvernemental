@@ -1,4 +1,7 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    cluster_by=['annee_mois', 'code_departement']
+) }}
 
 -- Score de déséquilibre territorial mensuel par département.
 -- Un score élevé = territoire sous tension (beaucoup de demandeurs, peu d'offres).
