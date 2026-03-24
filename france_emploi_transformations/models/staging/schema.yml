@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: chomeurs_indemnises
+  - name: stg_chomeurs_indemnises
     description: "Indicateurs mensuels de l'assurance chômage par département, après typage et nettoyage depuis la couche raw."
     columns:
       - name: annee_mois
@@ -38,7 +38,7 @@ models:
         description: "Nombre d'ouvertures de droits"
       - name: nb_reprises
         description: "Nombre de reprises d'emploi"
-  - name: demandeur_emploi_tranche_age
+  - name: stg_demandeur_emploi_tranche_age
     description: "Demandeurs d'emploi (DEFM) par tranche d'âge et catégorie, données mensuelles nationales."
     columns:
       - name: date
@@ -63,7 +63,7 @@ models:
         description: "Champ géographique"
       - name: type_de_donnees
         description: "Type de données (CVS, brut...)"
-  - name: offres_emploi_france_travail
+  - name: stg_offres_emploi_france_travail
     description: "Offres d'emploi collectées par France Travail, par département, type de contrat et qualification."
     columns:
       - name: date
@@ -101,7 +101,7 @@ models:
         description: "Niveau de qualification requis"
       - name: type_de_donnees
         description: "Type de données (CVS, brut...)"
-  - name: tranche_age
+  - name: stg_tranche_age
     description: "Population par sexe, tranche d'âge et département, issue du Recensement de la Population."
     columns:
       - name: time_period

@@ -3,7 +3,7 @@
 -- Référentiel des tranches d'âge avec libellés lisibles et indicateur population active
 WITH tranches AS (
     SELECT DISTINCT age
-    FROM {{ ref('tranche_age') }}
+    FROM {{ ref('stg_tranche_age') }}
 )
 
 SELECT

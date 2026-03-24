@@ -6,5 +6,5 @@ SELECT DISTINCT
     departement,
     code_region,
     region
-FROM {{ ref('offres_emploi_france_travail') }}
+FROM {{ ref('stg_offres_emploi_france_travail') }}
 WHERE code_departement IS NOT NULL

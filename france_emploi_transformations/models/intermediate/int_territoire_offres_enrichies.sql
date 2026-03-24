@@ -1,7 +1,7 @@
 {{ config(materialized='view') }}
 
 WITH offres AS (
-    SELECT * FROM {{ ref('offres_emploi_france_travail') }}
+    SELECT * FROM {{ ref('stg_offres_emploi_france_travail') }}
     WHERE type_d_offre_d_emploi = 'Offres collectées'
 ),
 
@@ -11,7 +11,7 @@ pop_active AS (
         geo                          AS code_departement,
         CAST(time_period AS INTEGER) AS annee,
         SUM(obs_value_niveau)        AS population_active
-    FROM {{ ref('tranche_age') }}
+    FROM {{ ref('stg_tranche_age') }}
     WHERE age IN ('Y15T24', 'Y25T54', 'Y55T64')
       AND sex = 'T'
     GROUP BY geo, time_period

@@ -1,0 +1,28 @@
+france_emploi_transformations:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "SNOWFLAKE_ACCOUNT"
+      user: "SNOWFLAKE_USER"
+      authenticator: oauth
+      token: "SNOWFLAKE_TOKEN"
+      role: "SNOWFLAKE_ROLE"
+      database: FRANCE_EMPLOI_DB
+      warehouse: FRANCE_EMPLOI_WH
+      schema: STAGING
+      threads: 4
+      client_session_keep_alive: false
+
+    prod:
+      type: snowflake
+      account: "SNOWFLAKE_ACCOUNT"
+      user: "SNOWFLAKE_USER"
+      authenticator: oauth
+      token: "SNOWFLAKE_TOKEN"
+      role: "SNOWFLAKE_ROLE"
+      database: FRANCE_EMPLOI_DB
+      warehouse: FRANCE_EMPLOI_WH
+      schema: INTERMEDIATE
+      threads: 4
+      client_session_keep_alive: false

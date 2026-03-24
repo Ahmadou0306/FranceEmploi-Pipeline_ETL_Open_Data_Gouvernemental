@@ -1,7 +1,7 @@
 {{ config(materialized='view') }}
 
 WITH chomeurs AS (
-    SELECT * FROM {{ ref('chomeurs_indemnises') }}
+    SELECT * FROM {{ ref('stg_chomeurs_indemnises') }}
 ),
 
 -- Population active (15-64 ans) par département et année
@@ -10,7 +10,7 @@ pop_active AS (
         geo                          AS code_departement,
         CAST(time_period AS INTEGER) AS annee,
         SUM(obs_value_niveau)        AS population_active
-    FROM {{ ref('tranche_age') }}
+    FROM {{ ref('stg_tranche_age') }}
     WHERE age IN ('Y15T24', 'Y25T54', 'Y55T64')
       AND sex = 'T'
     GROUP BY geo, time_period
