@@ -20,8 +20,8 @@ latest_offres AS (
         code_departement,
         SUM(nb_offres_collectees) AS nb_offres_dernier_mois
     FROM {{ ref('int_territoire_offres_enrichies') }}
+    GROUP BY code_departement, date
     QUALIFY ROW_NUMBER() OVER (PARTITION BY code_departement ORDER BY date DESC) = 1
-    GROUP BY code_departement
 )
 
 SELECT
