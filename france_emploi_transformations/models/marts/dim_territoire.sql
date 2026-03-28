@@ -8,3 +8,4 @@ SELECT DISTINCT
     region
 FROM {{ ref('stg_offres_emploi_france_travail') }}
 WHERE code_departement IS NOT NULL
+QUALIFY ROW_NUMBER() OVER (PARTITION BY code_departement ORDER BY code_region, departement) = 1
