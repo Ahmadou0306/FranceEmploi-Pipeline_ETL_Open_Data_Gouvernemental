@@ -9,7 +9,6 @@ config/*.json
 *.json.key
 infra/.terraform
 .terraform.lock.hcl
-.claude
 *pycache*
 !.gitkeep
 infra/variables.test
