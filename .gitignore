@@ -1,7 +1,5 @@
 venv
 .env
-project.md
-README.md
 logs/*
 config/gcp/*
 config/airflow.cfg
@@ -9,10 +7,8 @@ airflow-gcp-key.json
 service_account_key.json
 config/*.json
 *.json.key
-utils.txt
 infra/.terraform
 .terraform.lock.hcl
-*.md
 .claude
 *pycache*
 !.gitkeep
