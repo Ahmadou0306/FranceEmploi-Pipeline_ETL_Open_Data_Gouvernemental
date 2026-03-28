@@ -54,7 +54,7 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ["A", "B", "C", "D", "E", "ABC"]
+              values: ["A", "B", "C", "D", "E", "ABC", "ABCDE"]
       - name: nombre_de_demandeurs_d_emploi
         description: "Nombre de demandeurs d'emploi inscrits"
         tests:
@@ -91,12 +91,12 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ["Offres collectées", "Offres satisfaites"]
+              values: ["Offres d'emploi collectées", "Offres d'emploi satisfaites"]
       - name: type_d_emploi
         description: "Type d'emploi (durable, temporaire, occasionnel)"
         tests:
           - accepted_values:
-              values: ["Emploi durable", "Emploi temporaire", "Emploi occasionnel"]
+              values: ["Emplois durables (plus de 6 mois)", "Emplois temporaires (1 à 6 mois)", "Emplois occasionnels (moins d'1 mois)", "Total"]
       - name: qualification
         description: "Niveau de qualification requis"
       - name: type_de_donnees
@@ -117,13 +117,13 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ["Y_LT15", "Y15T24", "Y25T54", "Y55T64", "Y_GE65"]
+              values: ["Y_LT15", "Y15T24", "Y25T54", "Y55T64", "Y_GE65", "Y_LT20", "Y20T64", "Y25T39", "Y40T54", "Y65T79", "Y_GE80", "_T"]
       - name: sex
         description: "Sexe (M, F, T)"
         tests:
           - not_null
           - accepted_values:
-              values: ["M", "F", "T"]
+              values: ["M", "F", "T", "_T"]
       - name: rp_measure
         description: "Mesure du recensement"
         tests:

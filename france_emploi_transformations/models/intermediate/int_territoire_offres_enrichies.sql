@@ -11,7 +11,8 @@ WITH offres AS (
         qualification,
         nombre_d_offres_d_emploi
     FROM {{ ref('stg_offres_emploi_france_travail') }}
-    WHERE type_d_offre_d_emploi = 'Offres collectées'
+    WHERE type_d_offre_d_emploi = 'Offres d''emploi collectées'
+      AND type_d_emploi != 'Total'
 ),
 
 -- Population active (15-64 ans) par département et année
@@ -22,7 +23,7 @@ pop_active AS (
         SUM(obs_value_niveau)        AS population_active
     FROM {{ ref('stg_tranche_age') }}
     WHERE age IN ('Y15T24', 'Y25T54', 'Y55T64')
-      AND sex = 'T'
+      AND sex = '_T'
     GROUP BY geo, time_period
 ),
 

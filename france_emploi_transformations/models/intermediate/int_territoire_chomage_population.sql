@@ -24,7 +24,7 @@ pop_active AS (
         SUM(obs_value_niveau)        AS population_active
     FROM {{ ref('stg_tranche_age') }}
     WHERE age IN ('Y15T24', 'Y25T54', 'Y55T64')
-      AND sex = 'T'
+      AND sex = '_T'
     GROUP BY geo, time_period
 )
 
