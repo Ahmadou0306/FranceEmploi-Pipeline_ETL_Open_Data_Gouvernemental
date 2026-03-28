@@ -16,3 +16,4 @@ infra/.terraform
 .claude
 *pycache*
 !.gitkeep
+infra/variables.test
