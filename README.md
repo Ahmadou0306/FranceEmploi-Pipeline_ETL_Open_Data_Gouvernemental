@@ -115,8 +115,8 @@ Infrastructure commune à tous les DAGs de collecte :
 | DAG | Cron | Justification |
 |-----|------|---------------|
 | `chomeurs_indemnise` | `0 0 1 * *` | 1er du mois à minuit |
-| `emploie` | `0 0 1 * *` | 1er du mois à minuit |
-| `demandeur_emploie` | `0 0 1 * *` | 1er du mois à minuit |
+| `emploi` | `0 0 1 * *` | 1er du mois à minuit |
+| `demandeur_emploi` | `0 0 1 * *` | 1er du mois à minuit |
 | `tranche_age` | `0 0 1 1 *` | 1er janvier de chaque année |
 
 #### Vue d'ensemble des DAGs
@@ -397,8 +397,8 @@ Le déploiement nécessite deux passes Terraform car les emails des service acco
 │   │   ├── annuelle/tranche_age.py     # Population INSEE - annuel (1er janvier)
 │   │   └── mensuelle/
 │   │       ├── chomeurs_indemnise.py   # Allocataires UNEDIC - mensuel
-│   │       ├── emploie.py              # Offres d'emploi DARES - mensuel
-│   │       └── demandeur_emploie.py    # Demandeurs d'emploi DARES - mensuel
+│   │       ├── emploi.py               # Offres d'emploi DARES - mensuel
+│   │       └── demandeur_emploi.py     # Demandeurs d'emploi DARES - mensuel
 │   └── transformations/
 │       ├── annuelle/dbt_transformations_annuelle.py
 │       └── mensuel/dbt_transformations_mensuelle.py
@@ -610,8 +610,8 @@ Airflow est disponible sur `http://localhost:8081` (identifiants par défaut : `
 ```bash
 # Déclencher d'abord les DAGs de collecte
 docker compose exec airflow-scheduler airflow dags trigger france_emploi_chomeurs_indemnise
-docker compose exec airflow-scheduler airflow dags trigger france_emploi_emploie
-docker compose exec airflow-scheduler airflow dags trigger france_emploi_demandeur_emploie
+docker compose exec airflow-scheduler airflow dags trigger france_emploi_offres_emploi_france_travail
+docker compose exec airflow-scheduler airflow dags trigger france_emploi_demandeurs_emploi_tranche_age
 docker compose exec airflow-scheduler airflow dags trigger france_emploi_tranche_age
 
 # Puis déclencher les DAGs de transformation après la fin de la collecte
@@ -662,6 +662,119 @@ dbt build --select stg_chomeurs_indemnises+ stg_offres_emploi_france_travail+ st
 # Générer et exposer la documentation
 dbt docs generate && dbt docs serve
 ```
+
+---
+
+## 11. Couche de visualisation
+
+Les marts dbt exposent des tables analytiques directement consommables par des outils BI. Deux approches sont documentées ci-dessous.
+
+### 11.1 Connexion Metabase (recommandé, open source)
+
+Metabase peut être ajouté au `docker-compose.yaml` existant et se connecter à Snowflake via le driver officiel.
+
+```yaml
+# Extrait à ajouter dans docker-compose.yaml
+metabase:
+  image: metabase/metabase:latest
+  ports:
+    - "3000:3000"
+  environment:
+    MB_DB_TYPE: h2   # ou postgres pour la prod
+```
+
+Une fois démarré (`http://localhost:3000`), configurer la connexion Snowflake :
+
+| Champ | Valeur |
+|-------|--------|
+| Type | Snowflake |
+| Account | `<account>.snowflakecomputing.com` |
+| Database | `FRANCE_EMPLOI_DB` |
+| Warehouse | `FRANCE_EMPLOI_WH` |
+| Schema | `PUBLIC` |
+
+**Tableaux de bord suggérés :**
+
+- `mart_territoire` → carte choroplèthe des taux de chômage par département
+- `mart_evolution_temporelle` → courbe mensuelle nationale/régionale
+- `mart_desequilibre_emploi` → heatmap score de déséquilibre (offres vs demandeurs)
+
+### 11.2 Connexion Power BI / Tableau
+
+Utiliser le connecteur Snowflake natif (disponible dans les deux outils). Les marts sont directement accessibles sans transformation supplémentaire.
+
+---
+
+## 12. Mécanisme d'alertes par email
+
+### 12.1 Alertes Airflow (échec de DAG)
+
+Airflow est déjà configuré pour envoyer des emails sur les échecs. Le champ `email` dans `default_args` de chaque DAG est pré-rempli. Il suffit de configurer le backend SMTP dans `config/airflow.cfg` ou via les variables d'environnement :
+
+```bash
+# Variables à ajouter dans .env
+AIRFLOW__SMTP__SMTP_HOST=smtp.gmail.com
+AIRFLOW__SMTP__SMTP_PORT=587
+AIRFLOW__SMTP__SMTP_STARTTLS=True
+AIRFLOW__SMTP__SMTP_USER=your-email@gmail.com
+AIRFLOW__SMTP__SMTP_PASSWORD=your-app-password
+AIRFLOW__SMTP__SMTP_MAIL_FROM=your-email@gmail.com
+```
+
+Activer ensuite les alertes dans le `default_args` du DAG concerné :
+
+```python
+default_args = {
+    "email": ["your-email@example.com"],
+    "email_on_failure": True,   # ← passer à True
+    "email_on_retry": False,
+}
+```
+
+### 12.2 Alertes métier (seuils sur les données)
+
+Pour alerter quand un indicateur dépasse un seuil (ex. : taux de chômage > 12 % dans un département), ajouter une tâche de vérification dans les DAGs de transformation :
+
+```python
+from airflow.providers.standard.operators.python import PythonOperator
+import snowflake.connector
+
+def check_anomalies(**kwargs):
+    """Interroge les marts et envoie un email si un seuil est dépassé."""
+    conn = snowflake.connector.connect(
+        account=os.getenv("SNOWFLAKE_ACCOUNT"),
+        user=os.getenv("SNOWFLAKE_USER"),
+        password=os.getenv("SNOWFLAKE_PASSWORD"),
+        database="FRANCE_EMPLOI_DB",
+        warehouse="FRANCE_EMPLOI_WH",
+    )
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT departement, taux_chomage
+        FROM PUBLIC.mart_territoire
+        WHERE taux_chomage > 12
+        ORDER BY taux_chomage DESC
+    """)
+    rows = cursor.fetchall()
+    if rows:
+        body = "\n".join(f"{dept}: {rate:.1f}%" for dept, rate in rows)
+        # Utiliser le backend SMTP Airflow ou smtplib directement
+        send_email(
+            to=["your-email@example.com"],
+            subject="[FranceEmploi] Alerte — taux de chômage élevé",
+            html_content=f"<pre>{body}</pre>",
+        )
+
+check_anomalies_task = PythonOperator(
+    task_id="check_anomalies",
+    python_callable=check_anomalies,
+)
+
+# Ajouter à la fin de la chaîne dbt
+dbt_build_task >> check_anomalies_task
+```
+
+> **Note :** `send_email` est importable depuis `airflow.utils.email`. Le SMTP doit être configuré (voir §12.1).
 
 ---
 
