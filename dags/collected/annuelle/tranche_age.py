@@ -26,7 +26,7 @@ DESCRIPTION    = (
 )
 SCHEDULING_CRONTAB = "0 0 1 1 *"
 MAX_PAGES          = 500   # Garde-fou contre une boucle infinie
-MAX_ROW_RESULT     = 1000  # Taille de page — rester sous la limite de 10 000 résultats accessibles
+MAX_ROW_RESULT     = 1000  # Taille de page - rester sous la limite de 10 000 résultats accessibles
 START_YEAR         = 2020  # Début du recensement annuel tournant
 
 
@@ -113,14 +113,14 @@ def extract_data(ti, **kwargs) -> int:
 
                 nb_records += len(observations)
                 logger.info(
-                    f"Année {year} | Page {current_page} — "
+                    f"Année {year} | Page {current_page} - "
                     f"{len(observations)} obs | isLast={is_last_page}"
                 )
                 current_page += 1
 
             if current_page > MAX_PAGES:
                 logger.warning(
-                    f"[extract] Année {year} — limite de sécurité atteinte ({MAX_PAGES} pages). "
+                    f"[extract] Année {year} - limite de sécurité atteinte ({MAX_PAGES} pages). "
                     "Les données peuvent être incomplètes."
                 )
 
@@ -139,12 +139,12 @@ def extract_data(ti, **kwargs) -> int:
 # UPLOAD GCS
 # ==========================================================
 def upload_to_gcs(ti, **kwargs) -> str:
-    """L'upload est désormais fait dans extract_data — cette tâche valide simplement le résultat."""
+    """L'upload est désormais fait dans extract_data - cette tâche valide simplement le résultat."""
     destination = ti.xcom_pull(key=f"{COLLECTED_NAME}_gcs_path",  task_ids="extract_data")
     nb_records  = ti.xcom_pull(key=f"{COLLECTED_NAME}_nb_record", task_ids="extract_data")
 
     if not destination:
-        raise ValueError("Chemin GCS introuvable dans XCom — l'extraction a peut-être échoué.")
+        raise ValueError("Chemin GCS introuvable dans XCom - l'extraction a peut-être échoué.")
 
     logger.info(f"Upload confirmé : {destination} | {nb_records} enregistrements")
     return destination

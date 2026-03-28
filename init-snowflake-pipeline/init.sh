@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================
-# Initialisation du pipeline Snowflake — France Emploi
+# Initialisation du pipeline Snowflake - France Emploi
 # Exécute les scripts SQL dans l'ordre requis.
 #
 # Usage : bash init.sh
@@ -28,7 +28,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo ""
 echo "============================================================="
-echo " ÉTAPE 1 — Initialisation DB, schémas et intégrations GCS"
+echo " ÉTAPE 1 - Initialisation DB, schémas et intégrations GCS"
 echo "============================================================="
 $SNOWSQL_CMD -f "$DIR/connexion-snowflake-GCS.sql"
 
@@ -51,13 +51,13 @@ read -r -p " Appuyer sur [Entrée] une fois Terraform appliqué pour continuer..
 
 echo ""
 echo "============================================================="
-echo " ÉTAPE 2 — Création des stages externes GCS"
+echo " ÉTAPE 2 - Création des stages externes GCS"
 echo "============================================================="
 $SNOWSQL_CMD -f "$DIR/creation-stages-and-tables-raw.sql"
 
 echo ""
 echo "============================================================="
-echo " ÉTAPE 3 — Création des tables RAW et pipes Snowpipe"
+echo " ÉTAPE 3 - Création des tables RAW et pipes Snowpipe"
 echo "============================================================="
 $SNOWSQL_CMD -f "$DIR/snowpipe.sql"
 

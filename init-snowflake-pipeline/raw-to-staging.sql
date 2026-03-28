@@ -78,7 +78,7 @@ CREATE OR REPLACE TABLE FRANCE_EMPLOI_DB.STAGING.TRANCHE_AGE AS
 
 
 -- ============================================================
--- CONTRÔLE — Vérification du contenu des tables STAGING
+-- CONTRÔLE - Vérification du contenu des tables STAGING
 -- ============================================================
 
 SELECT * FROM FRANCE_EMPLOI_DB.STAGING.CHOMEURS_INDEMNISES          LIMIT 10;

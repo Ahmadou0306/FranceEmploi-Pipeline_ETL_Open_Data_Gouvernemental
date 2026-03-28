@@ -60,7 +60,7 @@ def extract_data(ti, **kwargs):
             logger.info(f"Année {year} | Offset {offset} | {len(results)}/{total} records")
             offset += limit
 
-        logger.info(f"Année {year} terminée — {total} records au total")
+        logger.info(f"Année {year} terminée - {total} records au total")
 
     GEO_FIELDS = {"geo_departement", "geo_centre"}
     all_data = [{k: v for k, v in record.items() if k not in GEO_FIELDS} for record in all_data]

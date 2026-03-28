@@ -9,7 +9,7 @@ models:
       - name: libelle_tranche_age
         tests: [not_null]
       - name: est_population_active
-        description: "TRUE pour Y15T24, Y25T54, Y55T64 — utilisé pour filtrer la population active"
+        description: "TRUE pour Y15T24, Y25T54, Y55T64 - utilisé pour filtrer la population active"
 
   - name: dim_territoire
     description: "Référentiel géographique : un enregistrement par département."

@@ -39,7 +39,7 @@ CREATE OR REPLACE STAGE FRANCE_EMPLOI_DB.PUBLIC.GCS_TRANCHE_AGE_LOAD
 
 
 -- ============================================================
--- VÉRIFICATION — Lister les fichiers disponibles dans chaque stage
+-- VÉRIFICATION - Lister les fichiers disponibles dans chaque stage
 -- Doit retourner les fichiers .json déposés par le DAG Airflow.
 -- Si vide : le DAG n'a pas encore tourné ou le stage est mal configuré.
 -- ============================================================
@@ -51,7 +51,7 @@ LIST @FRANCE_EMPLOI_DB.PUBLIC.GCS_TRANCHE_AGE_LOAD;
 
 
 -- ============================================================
--- PRÉVISUALISATION — Lecture directe depuis GCS (sans Snowpipe)
+-- PRÉVISUALISATION - Lecture directe depuis GCS (sans Snowpipe)
 -- Utile pour valider le contenu avant d'ingérer dans les tables RAW.
 -- ============================================================
 

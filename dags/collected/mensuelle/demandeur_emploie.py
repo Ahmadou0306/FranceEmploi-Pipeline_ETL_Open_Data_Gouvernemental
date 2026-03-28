@@ -61,7 +61,7 @@ def extract_data(ti, **kwargs):
             logger.info(f"Année {year} | Offset {offset} | {len(results)}/{total} records")
             offset += limit
 
-        logger.info(f"Année {year} terminée — {total} records au total")
+        logger.info(f"Année {year} terminée - {total} records au total")
 
     nb_records = len(all_data)
     logger.info(f"Extraction terminée : {nb_records} enregistrements au total")
